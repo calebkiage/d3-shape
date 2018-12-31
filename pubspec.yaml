@@ -1,6 +1,6 @@
 name: d3_shape
 description: Graphical primitives for visualization, such as lines and areas.
- version: 0.0.1
+version: 0.0.1
 # homepage: https://www.example.com
 # author: caleb <email@example.com>
 
