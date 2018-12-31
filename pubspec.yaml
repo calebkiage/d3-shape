@@ -1,0 +1,16 @@
+name: d3_shape
+description: Graphical primitives for visualization, such as lines and areas.
+ version: 0.0.1
+# homepage: https://www.example.com
+# author: caleb <email@example.com>
+
+environment:
+  sdk: '>=2.1.0 <3.0.0'
+
+dependencies:
+  d3_path:
+    git:
+      url: git://github.com/calebkiage/d3-path.git
+
+dev_dependencies:
+  test: ^1.0.0
