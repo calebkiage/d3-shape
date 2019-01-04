@@ -17,7 +17,7 @@ class Linear {
   }
 
   lineEnd() {
-    if (this._line ?? this._line != 0 ? this._point == 1 : 0)
+    if ((this._line != null && this._line != 0) || (this._line != 0 && this._point == 1))
       this._context.closePath();
     this._line = 1 - (this._line ?? 0);
   }
@@ -25,10 +25,11 @@ class Linear {
   point(num x, num y) {
     x = x ?? 0;
     y = y ?? 0;
+    var line = this._line ?? 0;
     switch (this._point) {
       case 0:
         this._point = 1;
-        this._line != null ? this._context.lineTo(x, y) : this._context.moveTo(x, y);
+        line != 0 ? this._context.lineTo(x, y) : this._context.moveTo(x, y);
         break;
       case 1:
         this._point = 2; // proceed

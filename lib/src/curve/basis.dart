@@ -39,7 +39,7 @@ class Basis {
         this._context.lineTo(this._x1, this._y1);
         break;
     }
-    if (this._line ?? this._line != 0 ? this._point == 1 : 0)
+    if ((this._line != null && this._line != 0) || (this._line != 0 && this._point == 1))
       this._context.closePath();
     this._line = 1 - (this._line ?? 0);
   }
@@ -50,7 +50,7 @@ class Basis {
     switch (this._point) {
       case 0:
         this._point = 1;
-        this._line != null ? this._context.lineTo(x, y) : this._context.moveTo(x, y);
+        (this._line != null && this._line != 0) ? this._context.lineTo(x, y) : this._context.moveTo(x, y);
         break;
       case 1:
         this._point = 2;

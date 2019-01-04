@@ -11,7 +11,7 @@ class _PathMatcher extends Matcher {
 
   @override
   Description describe(Description description) {
-    return null;
+    return description.add(this._value);
   }
 
   @override
