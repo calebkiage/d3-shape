@@ -46,9 +46,9 @@ _LazyLineGenerator line() {
 }
 
 class _LazyLineGenerator {
-  var _x = point.x,
-      _y = point.y,
-      _defined = constant(true);
+  dynamic _x = point.x,
+      _y = point.y;
+  var _defined = constant(true);
   dynamic _context = null,
       _curve = curveLinear,
       _output = null;
@@ -100,8 +100,9 @@ class _LazyLineGenerator {
     }
   }
 
-  x([datum, int index, data]) {
-    if (datum != null) {
+  x([List<Object> arguments]) {
+    if ((arguments?.length ?? 0) > 0) {
+      var datum = arguments.first;
       this._x = datum is Function ? datum : constant(datum);
       return this;
     } else {
@@ -109,8 +110,9 @@ class _LazyLineGenerator {
     }
   }
 
-  y([datum, int index, data]) {
-    if (datum != null) {
+  y([List<Object> arguments]) {
+    if ((arguments?.length ?? 0) > 0) {
+      var datum = arguments.first;
       this._y = datum is Function ? datum : constant(datum);
       return this;
     } else {

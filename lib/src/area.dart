@@ -71,11 +71,11 @@ _LazyAreaGenerator area() {
 }
 
 class _LazyAreaGenerator {
-  var _x0 = point.x,
+  dynamic _x0 = point.x,
       _x1 = null,
       _y0 = constant(0),
-      _y1 = point.y,
-      _defined = constant(true);
+      _y1 = point.y;
+  var _defined = constant(true);
   dynamic _context = null,
       _curve = curveLinear,
       _output = null;
@@ -88,7 +88,7 @@ class _LazyAreaGenerator {
   get lineY0 => _line0;
 
   _areaLine() {
-    return line().defined(this._defined).curve(this._curve).context(this._context);
+    return line().defined(this._defined).curve(this._curve).context([this._context]);
   }
 
   call([args]) {
@@ -96,7 +96,7 @@ class _LazyAreaGenerator {
   }
 
   context([List<Object> arguments]) {
-    if (arguments != null && arguments.length > 0) {
+    if ((arguments?.length ?? 0) > 0) {
       var value = arguments.first;
       if (value == null) {
         this._context = this._output = null;
@@ -140,7 +140,7 @@ class _LazyAreaGenerator {
   }
 
   x([List<Object> arguments]) {
-    if (arguments != null && arguments.length > 0) {
+    if ((arguments?.length ?? 0) > 0) {
       var datum = arguments.first;
       this._x0 = datum is Function ? datum : constant(datum);
       this._x1 = null;
@@ -161,7 +161,7 @@ class _LazyAreaGenerator {
   }
 
   x1([List<Object> arguments]) {
-    if (arguments != null && arguments.length > 0) {
+    if ((arguments?.length ?? 0) > 0) {
       var datum = arguments.first;
       this._x1 = datum == null ? null : datum is Function ? datum : constant(datum);
       return this;
@@ -171,7 +171,7 @@ class _LazyAreaGenerator {
   }
 
   y([List<Object> arguments]) {
-    if (arguments != null && arguments.length > 0) {
+    if ((arguments?.length ?? 0) > 0) {
       var datum = arguments.first;
       this._y0 = datum is Function ? datum : constant(datum);
       this._y1 = null;
@@ -182,7 +182,7 @@ class _LazyAreaGenerator {
   }
 
   y0([List<Object> arguments]) {
-    if (arguments != null && arguments.length > 0) {
+    if ((arguments?.length ?? 0) > 0) {
       var datum = arguments.first;
       this._y0 = datum is Function ? datum : constant(datum);
       return this;
@@ -192,7 +192,7 @@ class _LazyAreaGenerator {
   }
 
   y1([List<Object> arguments]) {
-    if (arguments != null && arguments.length > 0) {
+    if ((arguments?.length ?? 0) > 0) {
       var datum = arguments.first;
       this._y1 = datum == null ? null : datum is Function ? datum : constant(datum);
       return this;
@@ -202,14 +202,14 @@ class _LazyAreaGenerator {
   }
 
   _line0() {
-    return this._areaLine().x([this.x0]).y([this.y0]);
+    return this._areaLine().x([this._x0]).y([this._y0]);
   }
 
   lineX1() {
-    return this._areaLine().x([this.x1]).y([this.y0]);
+    return this._areaLine().x([this._x1]).y([this._y0]);
   }
 
   lineY1() {
-    return this._areaLine().x([this.x0]).y([this.y1]);
+    return this._areaLine().x([this._x0]).y([this._y1]);
   }
 }

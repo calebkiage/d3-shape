@@ -19,7 +19,7 @@ main() {
     var f = ([args, _, __]) {
       actual.add([args, _, __]);
     };
-    shape.line().x(f)(data);
+    shape.line().x([f])(data);
     expect(actual, [['a', 0, data], ['b', 1, data]]);
   });
 
@@ -28,7 +28,7 @@ main() {
     var f = ([args, _, __]) {
       actual.add([args, _, __]);
     };
-    shape.line().x(f)(data);
+    shape.line().x([f])(data);
     expect(actual, [['a', 0, data], ['b', 1, data]]);
   });
 
@@ -42,26 +42,26 @@ main() {
   });
 
   test('line.x(x)(data) observes the specified function', () {
-    var l = shape.line().x(([d, _, __]) {
+    var l = shape.line().x([([d, _, __]) {
       return d['x'];
-    });
+    }]);
     expect(l([{'x': 0, 1: 1}, {'x': 2, 1: 3}, {'x': 4, 1: 5}]), pathEqual('M0,1L2,3L4,5'));
   });
 
   test('line.x(x)(data) observes the specified constant', () {
-    var l = shape.line().x(0);
+    var l = shape.line().x([0]);
     expect(l([{1: 1}, {1: 3}, {1: 5}]), pathEqual('M0,1L0,3L0,5'));
   });
 
   test('line.y(y)(data) observes the specified function', () {
-    var l = shape.line().y(([d, _, __]) {
+    var l = shape.line().y([([d, _, __]) {
       return d['y'];
-    });
+    }]);
     expect(l([{0: 0, 'y': 1}, {0: 2, 'y': 3}, {0: 4, 'y': 5}]), pathEqual('M0,1L2,3L4,5'));
   });
 
   test('line.y(y)(data) observes the specified constant', () {
-    var l = shape.line().y(0);
+    var l = shape.line().y([0]);
     expect(l([{0: 0}, {0: 2}, {0: 4}]), pathEqual('M0,0L2,0L4,0'));
   });
 

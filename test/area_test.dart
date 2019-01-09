@@ -118,4 +118,91 @@ main() {
     expect(a.y1(), isNull);
     expect(a([{0: 0}, {0: 2}, {0: 4}]), pathEqual('M0,0L2,0L4,0L4,0L2,0L0,0Z'));
   });
+
+  test('area.curve(curve) sets the curve method', () {
+    var a = shape.area().curve(curves.curveCardinal);
+    expect(a([[0, 1], [1, 3], [2, 1], [3, 3]]), pathEqual('M0,1C0,1,0.666667,3,1,3C1.333333,3,1.666667,1,2,1C2.333333,1,3,3,3,3L3,0C3,0,2.333333,0,2,0C1.666667,0,1.333333,0,1,0C0.666667,0,0,0,0,0Z'));
+  });
+
+  test('area.curve(curveCardinal.tension(tension)) sets the cardinal spline tension', () {
+    var a = shape.area().curve(curves.curveCardinal.tension(0.1));
+    expect(a([]), isNull);
+    expect(a([[0, 1]]), pathEqual('M0,1L0,0Z'));
+    expect(a([[0, 1], [1, 3]]), pathEqual('M0,1L1,3L1,0L0,0Z'));
+    expect(a([[0, 1], [1, 3], [2, 1]]), pathEqual('M0,1C0,1,0.700000,3,1,3C1.300000,3,2,1,2,1L2,0C2,0,1.300000,0,1,0C0.700000,0,0,0,0,0Z'));
+    expect(a([[0, 1], [1, 3], [2, 1], [3, 3]]), pathEqual('M0,1C0,1,0.700000,3,1,3C1.300000,3,1.700000,1,2,1C2.300000,1,3,3,3,3L3,0C3,0,2.300000,0,2,0C1.700000,0,1.300000,0,1,0C0.700000,0,0,0,0,0Z'));
+  });
+
+  test('area.curve(curveCardinal.tension(tension)) coerces the specified tension to a number', () {
+    var a = shape.area().curve(curves.curveCardinal.tension('0.1'));
+    expect(a([]), isNull);
+    expect(a([[0, 1]]), pathEqual('M0,1L0,0Z'));
+    expect(a([[0, 1], [1, 3]]), pathEqual('M0,1L1,3L1,0L0,0Z'));
+    expect(a([[0, 1], [1, 3], [2, 1]]), pathEqual('M0,1C0,1,0.700000,3,1,3C1.300000,3,2,1,2,1L2,0C2,0,1.300000,0,1,0C0.700000,0,0,0,0,0Z'));
+    expect(a([[0, 1], [1, 3], [2, 1], [3, 3]]), pathEqual('M0,1C0,1,0.700000,3,1,3C1.300000,3,1.700000,1,2,1C2.300000,1,3,3,3,3L3,0C3,0,2.300000,0,2,0C1.700000,0,1.300000,0,1,0C0.700000,0,0,0,0,0Z'));
+  });
+  
+  test('area.lineX0() returns a line derived from the area', () {
+    var defined = () => true,
+        curve = curves.curveCardinal,
+        context = {},
+        x0 = ([List<Object> _]) => {},
+        x1 = ([List<Object> _]) => {},
+        y = ([List<Object> _]) => {},
+        a = shape.area().defined(defined).curve(curve).context([context]).y([y]).x0([x0]).x1([x1]),
+        l = a.lineX0();
+    expect(l.defined(), equals(defined));
+    expect(l.curve(), equals(curve));
+    expect(l.context(), equals(context));
+    expect(l.x(), equals(x0));
+    expect(l.y(), equals(y));
+  });
+
+  test('area.lineX1() returns a line derived from the area', () {
+    var defined = () => true,
+        curve = curves.curveCardinal,
+        context = {},
+        x0 = ([List<Object> _]) => {},
+        x1 = ([List<Object> _]) => {},
+        y = ([List<Object> _]) => {},
+        a = shape.area().defined(defined).curve(curve).context([context]).y([y]).x0([x0]).x1([x1]),
+        l = a.lineX1();
+    expect(l.defined(), equals(defined));
+    expect(l.curve(), equals(curve));
+    expect(l.context(), equals(context));
+    expect(l.x(), equals(x1));
+    expect(l.y(), equals(y));
+  });
+
+  test('area.lineY0() returns a line derived from the area', () {
+    var defined = () => true,
+        curve = curves.curveCardinal,
+        context = {},
+        x = ([List<Object> _]) => {},
+        y0 = ([List<Object> _]) => {},
+        y1 = ([List<Object> _]) => {},
+        a = shape.area().defined(defined).curve(curve).context([context]).x([x]).y0([y0]).y1([y1]),
+        l = a.lineY0();
+    expect(l.defined(), equals(defined));
+    expect(l.curve(), equals(curve));
+    expect(l.context(), equals(context));
+    expect(l.x(), equals(x));
+    expect(l.y(), equals(y0));
+  });
+
+  test('area.lineY1() returns a line derived from the area', () {
+    var defined = () => true,
+        curve = curves.curveCardinal,
+        context = {},
+        x = ([List<Object> _]) => {},
+        y0 = ([List<Object> _]) => {},
+        y1 = ([List<Object> _]) => {},
+        a = shape.area().defined(defined).curve(curve).context([context]).x([x]).y0([y0]).y1([y1]),
+        l = a.lineY1();
+    expect(l.defined(), equals(defined));
+    expect(l.curve(), equals(curve));
+    expect(l.context(), equals(context));
+    expect(l.x(), equals(x));
+    expect(l.y(), equals(y1));
+  });
 }
