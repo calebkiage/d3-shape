@@ -1,35 +1,42 @@
-import '../noop.dart';
+import 'package:d3_shape/curves.dart';
 
-class LinearClosed {
+class LinearClosedCurve implements Curve {
   var _context;
   var _point;
 
-  LinearClosed(this._context);
+  LinearClosedCurve(this._context);
 
-  Function areaStart = noop;
-  Function areaEnd = noop;
+  @override
+  areaEnd() {}
 
+  @override
+  areaStart() {}
+
+  @override
   lineStart() {
     this._point = 0;
   }
 
+  @override
   lineEnd() {
     if (this._point != 0 && this._point != null) this._context.closePath();
   }
 
+  @override
   point(num x, num y) {
     x = x ?? 0;
     y = y ?? 0;
     if (this._point != null && this._point != 0) {
       this._context.lineTo(x, y);
-    }
-    else {
+    } else {
       this._point = 1;
       this._context.moveTo(x, y);
     }
   }
 }
 
-LinearClosed curveLinearClosed(context) {
-  return LinearClosed(context);
+Function linearClosedCurve() {
+  return (context) {
+    return LinearClosedCurve(context);
+  };
 }

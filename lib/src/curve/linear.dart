@@ -1,27 +1,34 @@
-class Linear {
+import 'package:d3_shape/curves.dart';
+
+class LinearCurve implements Curve {
   var _context;
   var _point, _line;
 
-  Linear(this._context);
+  LinearCurve(this._context);
 
+  @override
   areaStart() {
     this._line = 0;
   }
 
+  @override
   areaEnd() {
     this._line = null;
   }
 
+  @override
   lineStart() {
     this._point = 0;
   }
 
+  @override
   lineEnd() {
     if ((this._line != null && this._line != 0) || (this._line != 0 && this._point == 1))
       this._context.closePath();
     this._line = 1 - (this._line ?? 0);
   }
 
+  @override
   point(num x, num y) {
     x = x ?? 0;
     y = y ?? 0;
@@ -42,6 +49,8 @@ class Linear {
   }
 }
 
-Linear curveLinear(context) {
-  return Linear(context);
+Function linearCurve() {
+  return (context) {
+    return LinearCurve(context);
+  };
 }

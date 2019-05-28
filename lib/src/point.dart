@@ -1,21 +1,45 @@
-x([p, index, data]) {
-  var result = null;
+class UntypedPoint {
+  static x([p, index, data]) {
+    var result = null;
 
-  try {
-    result = p[0];
-  } catch (e) {
+    if (p is Point) {
+      result = p.x;
+    } else {
+      try {
+        result = p[0];
+      } catch (e) {}
+    }
+
+    return result;
   }
 
-  return result;
+  static y([p, index, data]) {
+    var result = null;
+
+    if (p is Point) {
+      result = p.y;
+    } else {
+      try {
+        result = p[1];
+      } catch (e) {}
+    }
+
+    return result;
+  }
 }
 
-y([p, index, data]) {
-  var result = null;
+class Point {
+  Object x, y;
 
-  try {
-    result = p[1];
-  } catch (e) {
+  Point(this.x, this.y);
+
+  Point.origin() {
+    this.x = 0;
+    this.y = 0;
   }
 
-  return result;
+  @override
+  String toString() {
+    return "[${this.x}, ${this.y}]";
+  }
 }

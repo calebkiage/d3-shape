@@ -1,3 +1,5 @@
+import 'package:d3_shape/src/curve/curve.dart';
+
 _pointFn(that, x, y) {
   that._context.bezierCurveTo(
       (2 * that._x0 + that._x1) / 3,
@@ -8,26 +10,30 @@ _pointFn(that, x, y) {
       (that._y0 + 4 * that._y1 + y) / 6);
 }
 
-class Basis {
+class BasisCurve implements Curve {
   dynamic _context;
   var _point, _line;
   var _x0, _x1, _y0, _y1;
 
-  Basis(this._context);
+  BasisCurve(this._context);
 
+  @override
   areaStart() {
     this._line = 0;
   }
 
+  @override
   areaEnd() {
     this._line = null;
   }
 
+  @override
   lineStart() {
     this._x0 = this._x1 = this._y0 = this._y1 = null;
     this._point = 0;
   }
 
+  @override
   lineEnd() {
     switch (this._point) {
       case 3:
@@ -44,6 +50,7 @@ class Basis {
     this._line = 1 - (this._line ?? 0);
   }
 
+  @override
   point(num x, num y) {
     x = x ?? 0;
     y = y ?? 0;
@@ -73,6 +80,8 @@ class Basis {
   }
 }
 
-Basis curveBasis(context) {
-  return Basis(context);
+Function basisCurve() {
+  return (context) {
+    return BasisCurve(context);
+  };
 }

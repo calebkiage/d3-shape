@@ -1,9 +1,7 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
 library d3_shape;
 
-export 'src/arc.dart';
-export 'src/area.dart';
-export 'src/line.dart';
-export 'src/model.dart';
+export 'src/arc_generator.dart';
+export 'src/area_generator.dart';
+export 'src/line_generator.dart';
+export 'src/point.dart';
+export 'src/shape_generator.dart';

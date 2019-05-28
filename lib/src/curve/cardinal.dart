@@ -1,3 +1,5 @@
+import 'package:d3_shape/curves.dart';
+
 _pointFn(that, x, y) {
   that._context.bezierCurveTo(
       that._x1 + that._k * (that._x2 - that._x0),
@@ -9,29 +11,33 @@ _pointFn(that, x, y) {
   );
 }
 
-class Cardinal {
+class CardinalCurve implements Curve {
   dynamic _context;
   var _k;
   var _point, _line;
   var _x0, _x1, _x2, _y0, _y1, _y2;
 
-  Cardinal(this._context, num tension) {
+  CardinalCurve([this._context, num tension = 0]) {
     this._k = (1 - tension) / 6;
   }
 
+  @override
   areaStart() {
     this._line = 0;
   }
 
+  @override
   areaEnd() {
     this._line = null;
   }
 
+  @override
   lineStart() {
     this._x0 = this._x1 = this._x2 = this._y0 = this._y1 = this._y2 = null;
     this._point = 0;
   }
 
+  @override
   lineEnd() {
     switch (this._point) {
       case 2:
@@ -46,6 +52,7 @@ class Cardinal {
     this._line = 1 - (this._line ?? 0);
   }
 
+  @override
   point(num x, num y) {
     x = x ?? 0;
     y = y ?? 0;
@@ -77,29 +84,16 @@ class Cardinal {
   }
 }
 
-_CurveCardinal curveCardinal = _CurveCardinal(0);
+Function curveCardinal({tension = 0}) {
+  num t = 0;
 
-class _CurveCardinal extends Function {
-  num _tension = 0;
-
-  _CurveCardinal([this._tension]);
-
-  call(context) {
-    return Cardinal(context, this._tension);
+  if (tension is String) {
+    t = (double.tryParse(tension) ?? 0);
+  } else if (tension is num) {
+    t = tension ?? 0;
   }
 
-  _CurveCardinal tension(tension) {
-    if (tension is String) {
-      return _CurveCardinal(double.tryParse(tension) ?? 0);
-    } else if (tension is num) {
-      return _CurveCardinal(tension ?? 0);
-    } else {
-      return _CurveCardinal(0);
-    }
-  }
-
-  @override
-  noSuchMethod(Invocation invocation) {
-    return super.noSuchMethod(invocation);
-  }
+  return (context) {
+    return CardinalCurve(context, t);
+  };
 }

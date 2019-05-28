@@ -1,22 +1,28 @@
-class Step {
+import 'package:d3_shape/curves.dart';
+
+class StepCurve implements Curve {
   var _context, _t;
   var _line, _point, _x, _y;
 
-  Step(this._context, this._t);
+  StepCurve(this._context, this._t);
 
+  @override
   areaStart() {
     this._line = 0;
   }
 
+  @override
   areaEnd() {
     this._line = null;
   }
 
+  @override
   lineStart() {
     this._x = this._y = null;
     this._point = 0;
   }
 
+  @override
   lineEnd() {
     if (0 < this._t && this._t < 1 && this._point == 2)
       this._context.lineTo(this._x, this._y);
@@ -30,6 +36,7 @@ class Step {
     }
   }
 
+  @override
   point(x, y) {
     x = x ?? 0;
     y = y ?? 0;
@@ -62,14 +69,20 @@ class Step {
   }
 }
 
-Step curveStep(context) {
-  return Step(context, 0.5);
+Function stepCurve() {
+  return (context) {
+    return StepCurve(context, 0.5);
+  };
 }
 
-Step curveStepAfter(context) {
-  return Step(context, 1);
+Function stepAfterCurve() {
+  return (context) {
+    return StepCurve(context, 1);
+  };
 }
 
-Step curveStepBefore(context) {
-  return Step(context, 0);
+Function stepBeforeCurve() {
+  return (context) {
+    return StepCurve(context, 0);
+  };
 }
