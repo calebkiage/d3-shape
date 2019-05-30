@@ -1,13 +1,13 @@
 import 'package:d3_shape/src/curve/curve.dart';
 
-_pointFn(that, x, y) {
-  that._context.bezierCurveTo(
-      (2 * that._x0 + that._x1) / 3,
-      (2 * that._y0 + that._y1) / 3,
-      (that._x0 + 2 * that._x1) / 3,
-      (that._y0 + 2 * that._y1) / 3,
-      (that._x0 + 4 * that._x1 + x) / 6,
-      (that._y0 + 4 * that._y1 + y) / 6);
+basisPointFn(that, x, y) {
+  that.context.bezierCurveTo(
+      (2 * that.x0 + that.x1) / 3,
+      (2 * that.y0 + that.y1) / 3,
+      (that.x0 + 2 * that.x1) / 3,
+      (that.y0 + 2 * that.y1) / 3,
+      (that.x0 + 4 * that.x1 + x) / 6,
+      (that.y0 + 4 * that.y1 + y) / 6);
 }
 
 class BasisCurve implements Curve {
@@ -16,6 +16,12 @@ class BasisCurve implements Curve {
   var _x0, _x1, _y0, _y1;
 
   BasisCurve(this._context);
+
+  dynamic get context => this._context;
+  get x0 => this._x0;
+  get x1 => this._x1;
+  get y0 => this._y0;
+  get y1 => this._y1;
 
   @override
   areaStart() {
@@ -37,7 +43,7 @@ class BasisCurve implements Curve {
   lineEnd() {
     switch (this._point) {
       case 3:
-        _pointFn(this, this._x1, this._y1);
+        basisPointFn(this, this._x1, this._y1);
         // proceed
         continue line;
       line:
@@ -69,7 +75,7 @@ class BasisCurve implements Curve {
         continue point;
       point:
       default:
-        _pointFn(this, x, y);
+        basisPointFn(this, x, y);
         break;
     }
 
