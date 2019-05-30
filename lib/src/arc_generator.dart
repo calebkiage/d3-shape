@@ -2,9 +2,73 @@ import 'package:d3_path/d3_path.dart';
 import 'package:d3_shape/constant.dart';
 import 'package:d3_shape/d3_shape.dart';
 import 'package:d3_shape/math.dart';
-import 'package:d3_shape/util.dart';
 
 class ArcGenerator implements ShapeGenerator {
+  Function _cornerRadius = constant(0),
+      _endAngle = null,
+      _innerRadius = null,
+      _outerRadius = null,
+      _padAngle = null,
+      _padRadius = null,
+      _startAngle = null;
+  var _context = null;
+
+  ArcGenerator context(value) {
+    this._context = value;
+    return this;
+  }
+
+  ArcGenerator cornerRadius(value) {
+    this._cornerRadius = value is Function ? value : constant(value);
+    return this;
+  }
+
+  @override
+  Arc generate({data}) {
+    return new Arc(
+        this._context,
+        this._cornerRadius,
+        this._endAngle,
+        this._innerRadius,
+        this._outerRadius,
+        this._padAngle,
+        this._padRadius,
+        this._startAngle,
+        data);
+  }
+
+  ArcGenerator endAngle(value) {
+    this._endAngle = value is Function ? value : constant(value);
+    return this;
+  }
+
+  ArcGenerator innerRadius(value) {
+    this._innerRadius = value is Function ? value : constant(value);
+    return this;
+  }
+
+  ArcGenerator outerRadius(value) {
+    this._outerRadius = value is Function ? value : constant(value);
+    return this;
+  }
+
+  ArcGenerator padAngle(value) {
+    this._padAngle = value is Function ? value : constant(value);
+    return this;
+  }
+
+  ArcGenerator padRadius(value) {
+    this._padRadius = value is Function ? value : constant(value);
+    return this;
+  }
+
+  ArcGenerator startAngle(value) {
+    this._startAngle = value is Function ? value : constant(value);
+    return this;
+  }
+}
+
+class Arc implements Shape {
   bool _drawn = false;
   Function _cornerRadius = constant(0),
       _endAngle = _arcEndAngle,
@@ -13,42 +77,66 @@ class ArcGenerator implements ShapeGenerator {
       _padAngle = _arcPadAngle,
       _padRadius = null,
       _startAngle = _arcStartAngle;
-  var context = null;
+  var _context = null;
+  var _data = null;
 
-  List<num> centroid([data]) {
+  get cornerRadius => this._cornerRadius;
+
+  get endAngle => this._endAngle;
+
+  get innerRadius => this._innerRadius;
+
+  get outerRadius => this._outerRadius;
+
+  get padAngle => this._padAngle;
+
+  get padRadius => this._padRadius;
+
+  get startAngle => this._startAngle;
+
+  Arc(context, cornerRadius, endAngle, innerRadius, outerRadius, padAngle,
+      padRadius, startAngle,
+      [data]) {
+    this._context = context ?? this._context;
+    this._cornerRadius = cornerRadius ?? this._cornerRadius;
+    this._data = data;
+    this._endAngle = endAngle ?? this._endAngle;
+    this._innerRadius = innerRadius ?? this._innerRadius;
+    this._outerRadius = outerRadius ?? this._outerRadius;
+    this._padAngle = padAngle ?? this._padAngle;
+    this._padRadius = padRadius ?? this._padRadius;
+    this._startAngle = startAngle ?? this._startAngle;
+  }
+
+  List<num> centroid() {
     var r_cache =
-        (this._innerRadius(data) ?? 0) + (this._outerRadius(data) ?? 0);
-    var a_cache = (this._startAngle(data) ?? 0) + (this._endAngle(data) ?? 0);
+        (this._innerRadius(this._data) ?? 0) + (this._outerRadius(this._data) ?? 0);
+    var a_cache = (this._startAngle(this._data) ?? 0) + (this._endAngle(this._data) ?? 0);
     var r = r_cache != 0 ? r_cache / 2 : 0,
         a = a_cache != 0 ? (a_cache / 2 - pi / 2) : 0;
     return [cos(a) * r, sin(a) * r];
   }
 
-  get cornerRadius {
-    return this._cornerRadius;
-  }
-
-  set cornerRadius(value) {
-    this._cornerRadius = value is Function ? value : constant(value);
-  }
-
   @override
-  draw([data]) {
-    if (this._drawn) {
-      throw new DrawException("The draw method can only be called once.");
-    }
-
+  draw() {
     var buffer;
     num r;
-    num r0 = this.innerRadius(data) ?? 0;
-    num r1 = this.outerRadius(data) ?? 0;
-    num a0 =
-    this.startAngle(data) != null ? this.startAngle(data) - halfPi : 0;
-    num a1 = this.endAngle(data) != null ? this.endAngle(data) - halfPi : 0;
+    num r0 = this._innerRadius(this._data) ?? 0;
+    num r1 = this._outerRadius(this._data) ?? 0;
+    num a0 = this._startAngle(this._data) != null
+        ? this._startAngle(this._data) - halfPi
+        : 0;
+    num a1 = this._endAngle(this._data) != null
+        ? this._endAngle(this._data) - halfPi
+        : 0;
     num da = abs(a1 - a0);
     bool cw = a1 > a0;
 
-    if (this.context == null) this.context = buffer = path();
+    if (this._context == null) this._context = buffer = path();
+
+    if (this._drawn) {
+      return _processOutput(buffer);
+    }
 
     // Ensure that the outer radius is always larger than the inner radius.
     if (r1 < r0) {
@@ -59,23 +147,23 @@ class ArcGenerator implements ShapeGenerator {
 
     // Is it a point?
     if (!(r1 > epsilon))
-      this.context.moveTo(0, 0);
+      this._context.moveTo(0, 0);
 
     // Or is it a circle or annulus?
     else if (da > tau - epsilon) {
-      this.context.moveTo(r1 * cos(a0), r1 * sin(a0));
-      this.context.arc(0, 0, r1, a0, a1, !cw);
+      this._context.moveTo(r1 * cos(a0), r1 * sin(a0));
+      this._context.arc(0, 0, r1, a0, a1, !cw);
       if (r0 > epsilon) {
-        this.context.moveTo(r0 * cos(a1), r0 * sin(a1));
-        this.context.arc(0, 0, r0, a1, a0, cw);
+        this._context.moveTo(r0 * cos(a1), r0 * sin(a1));
+        this._context.arc(0, 0, r0, a1, a0, cw);
       }
     }
 
     // Or is it a circular or annular sector?
     else {
-      var rp_0 = (this.padRadius != null
-          ? this.padRadius(data)
-          : sqrt(r0 * r0 + r1 * r1)) ??
+      var rp_0 = (this._padRadius != null
+              ? this._padRadius(this._data)
+              : sqrt(r0 * r0 + r1 * r1)) ??
           0;
       var a01 = a0,
           a11 = a1,
@@ -83,9 +171,11 @@ class ArcGenerator implements ShapeGenerator {
           a10 = a1,
           da0 = da,
           da1 = da,
-          ap = (this.padAngle(data) ?? 0) > 0 ? this.padAngle(data) / 2 : 0,
+          ap = (this._padAngle(this._data) ?? 0) > 0
+              ? this._padAngle(this._data) / 2
+              : 0,
           rp = ((ap > epsilon) ? rp_0 : 0),
-          rc = min(abs(r1 - r0) / 2, this.cornerRadius(data) ?? 0),
+          rc = min(abs(r1 - r0) / 2, this._cornerRadius(this._data) ?? 0),
           rc0 = rc,
           rc1 = rc,
           t0,
@@ -127,15 +217,15 @@ class ArcGenerator implements ShapeGenerator {
         // Restrict the corner radius according to the sector angle.
         if (da < pi) {
           var oc = da0 > epsilon
-              ? _intersect(x01, y01, x00, y00, x11, y11, x10, y10)
-              : [x10, y10],
+                  ? _intersect(x01, y01, x00, y00, x11, y11, x10, y10)
+                  : [x10, y10],
               ax = x01 - oc[0],
               ay = y01 - oc[1],
               bx = x11 - oc[0],
               by = y11 - oc[1],
               kc = 1 /
                   sin(acos((ax * bx + ay * by) /
-                      (sqrt(ax * ax + ay * ay) * sqrt(bx * bx + by * by))) /
+                          (sqrt(ax * ax + ay * ay) * sqrt(bx * bx + by * by))) /
                       2),
               lc = sqrt(oc[0] * oc[0] + oc[1] * oc[1]);
           rc0 = min(rc, (r0 - lc) / (kc - 1));
@@ -145,126 +235,82 @@ class ArcGenerator implements ShapeGenerator {
 
       // Is the sector collapsed to a line?
       if (!(da1 > epsilon))
-        this.context.moveTo(x01, y01);
+        this._context.moveTo(x01, y01);
 
       // Does the sector’s outer ring have rounded corners?
       else if (rc1 > epsilon) {
         t0 = _cornerTangents(x00, y00, x01, y01, r1, rc1, cw);
         t1 = _cornerTangents(x11, y11, x10, y10, r1, rc1, cw);
 
-        this.context.moveTo(t0.cx + t0.x01, t0.cy + t0.y01);
+        this._context.moveTo(t0.cx + t0.x01, t0.cy + t0.y01);
 
         // Have the corners merged?
         if (rc1 < rc)
-          this.context.arc(t0.cx, t0.cy, rc1, atan2(t0.y01, t0.x01),
+          this._context.arc(t0.cx, t0.cy, rc1, atan2(t0.y01, t0.x01),
               atan2(t1.y01, t1.x01), !cw);
 
         // Otherwise, draw the two corners and the ring.
         else {
-          this.context.arc(t0.cx, t0.cy, rc1, atan2(t0.y01, t0.x01),
+          this._context.arc(t0.cx, t0.cy, rc1, atan2(t0.y01, t0.x01),
               atan2(t0.y11, t0.x11), !cw);
-          this.context.arc(0, 0, r1, atan2(t0.cy + t0.y11, t0.cx + t0.x11),
+          this._context.arc(0, 0, r1, atan2(t0.cy + t0.y11, t0.cx + t0.x11),
               atan2(t1.cy + t1.y11, t1.cx + t1.x11), !cw);
-          this.context.arc(t1.cx, t1.cy, rc1, atan2(t1.y11, t1.x11),
+          this._context.arc(t1.cx, t1.cy, rc1, atan2(t1.y11, t1.x11),
               atan2(t1.y01, t1.x01), !cw);
         }
       }
 
       // Or is the outer ring just a circular arc?
       else {
-        this.context.moveTo(x01, y01);
-        this.context.arc(0, 0, r1, a01, a11, !cw);
+        this._context.moveTo(x01, y01);
+        this._context.arc(0, 0, r1, a01, a11, !cw);
       }
 
       // Is there no inner ring, and it’s a circular sector?
       // Or perhaps it’s an annular sector collapsed due to padding?
       if (!(r0 > epsilon) || !(da0 > epsilon))
-        this.context.lineTo(x10, y10);
+        this._context.lineTo(x10, y10);
 
       // Does the sector’s inner ring (or point) have rounded corners?
       else if (rc0 > epsilon) {
         t0 = _cornerTangents(x10, y10, x11, y11, r0, -rc0, cw);
         t1 = _cornerTangents(x01, y01, x00, y00, r0, -rc0, cw);
 
-        this.context.lineTo(t0.cx + t0.x01, t0.cy + t0.y01);
+        this._context.lineTo(t0.cx + t0.x01, t0.cy + t0.y01);
 
         // Have the corners merged?
         if (rc0 < rc)
-          this.context.arc(t0.cx, t0.cy, rc0, atan2(t0.y01, t0.x01),
+          this._context.arc(t0.cx, t0.cy, rc0, atan2(t0.y01, t0.x01),
               atan2(t1.y01, t1.x01), !cw);
 
         // Otherwise, draw the two corners and the ring.
         else {
-          this.context.arc(t0.cx, t0.cy, rc0, atan2(t0.y01, t0.x01),
+          this._context.arc(t0.cx, t0.cy, rc0, atan2(t0.y01, t0.x01),
               atan2(t0.y11, t0.x11), !cw);
-          this.context.arc(0, 0, r0, atan2(t0.cy + t0.y11, t0.cx + t0.x11),
+          this._context.arc(0, 0, r0, atan2(t0.cy + t0.y11, t0.cx + t0.x11),
               atan2(t1.cy + t1.y11, t1.cx + t1.x11), cw);
-          this.context.arc(t1.cx, t1.cy, rc0, atan2(t1.y11, t1.x11),
+          this._context.arc(t1.cx, t1.cy, rc0, atan2(t1.y11, t1.x11),
               atan2(t1.y01, t1.x01), !cw);
         }
       }
 
       // Or is the inner ring just a circular arc?
       else
-        this.context.arc(0, 0, r0, a10, a00, cw);
+        this._context.arc(0, 0, r0, a10, a00, cw);
     }
 
-    this.context.closePath();
+    this._context.closePath();
+    this._drawn = true;
+    return _processOutput(buffer);
+  }
 
+  _processOutput(buffer) {
     if (buffer != null) {
-      this.context = null;
+      this._context = null;
       return "$buffer" ?? null;
     }
 
     return null;
-  }
-
-  get endAngle {
-    return this._endAngle;
-  }
-
-  set endAngle(value) {
-    this._endAngle = value is Function ? value : constant(value);
-  }
-
-  get innerRadius {
-    return this._innerRadius;
-  }
-
-  set innerRadius(value) {
-    this._innerRadius = value is Function ? value : constant(value);
-  }
-
-  get outerRadius {
-    return this._outerRadius;
-  }
-
-  set outerRadius(value) {
-    this._outerRadius = value is Function ? value : constant(value);
-  }
-
-  get padAngle {
-    return this._padAngle;
-  }
-
-  set padAngle(value) {
-    this._padAngle = value is Function ? value : constant(value);
-  }
-
-  get padRadius {
-    return this._padRadius;
-  }
-
-  set padRadius(value) {
-    this._padRadius = value is Function ? value : constant(value);
-  }
-
-  get startAngle {
-    return this._startAngle;
-  }
-
-  set startAngle(value) {
-    this._startAngle = value is Function ? value : constant(value);
   }
 
   static num _arcInnerRadius(d) {
@@ -289,7 +335,8 @@ class ArcGenerator implements ShapeGenerator {
 
   // Compute perpendicular offset line of length rc.
   // http://mathworld.wolfram.com/Circle-LineIntersection.html
-  static _cornerTangents(num x0, num y0, num x1, num y1, num r1, num rc, bool cw) {
+  static _cornerTangents(
+      num x0, num y0, num x1, num y1, num r1, num rc, bool cw) {
     var x01 = x0 - x1,
         y01 = y0 - y1,
         lo = (cw ? rc : -rc) / sqrt(x01 * x01 + y01 * y01),
@@ -335,7 +382,8 @@ class ArcGenerator implements ShapeGenerator {
     return result;
   }
 
-  static _intersect(num x0, num y0, num x1, num y1, num x2, num y2, num x3, num y3) {
+  static _intersect(
+      num x0, num y0, num x1, num y1, num x2, num y2, num x3, num y3) {
     var x10 = x1 - x0,
         y10 = y1 - y0,
         x32 = x3 - x2,

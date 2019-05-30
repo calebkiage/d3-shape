@@ -21,11 +21,11 @@ void main() {
         };
       };
 
-      var arc = shape.ArcGenerator();
-      arc.cornerRadius = f;
-      arc.outerRadius = 100;
-
-      Function.apply(arc.draw, [expected['args']]);
+      var arc = shape.ArcGenerator()
+          .cornerRadius(f)
+          .outerRadius(100)
+          .generate(data: expected['args']);
+      arc.draw();
       expect(actual, equals(expected));
     },
   );
@@ -45,9 +45,9 @@ void main() {
         };
       };
 
-      var arc = shape.ArcGenerator();
-      arc.endAngle = f;
-      Function.apply(arc.draw, [expected['args']]);
+      var arc =
+          shape.ArcGenerator().endAngle(f).generate(data: expected['args']);
+      arc.draw();
       expect(actual, equals(expected));
     },
   );
@@ -66,10 +66,9 @@ void main() {
           'args': args,
         };
       };
-      var arc = shape.ArcGenerator();
-      arc.innerRadius = f;
-
-      Function.apply(arc.draw, [expected['args']]);
+      var arc =
+          shape.ArcGenerator().innerRadius(f).generate(data: expected['args']);
+      arc.draw();
       expect(actual, equals(expected));
     },
   );
@@ -89,10 +88,9 @@ void main() {
         };
       };
 
-      var arc = shape.ArcGenerator();
-      arc.outerRadius = f;
-
-      Function.apply(arc.draw, [expected['args']]);
+      var arc =
+          shape.ArcGenerator().outerRadius(f).generate(data: expected['args']);
+      arc.draw();
       expect(actual, equals(expected));
     },
   );
@@ -112,12 +110,11 @@ void main() {
         };
       };
 
-      var arc = shape.ArcGenerator();
-      arc.outerRadius = 100;
-      arc.startAngle = Math.pi / 2;
-      arc.padAngle = f;
-
-      Function.apply(arc.draw, [expected['args']]);
+      var arc = shape.ArcGenerator()
+          .outerRadius(100)
+          .startAngle(Math.pi / 2)
+          .padAngle(f);
+      arc.generate(data: expected['args']).draw();
       expect(actual, equals(expected));
     },
   );
@@ -137,13 +134,12 @@ void main() {
         };
       };
 
-      var arc = shape.ArcGenerator();
-      arc.outerRadius = 100;
-      arc.startAngle = Math.pi / 2;
-      arc.padAngle = 0.1;
-      arc.padRadius = f;
-
-      Function.apply(arc.draw, [expected['args']]);
+      var arc = shape.ArcGenerator()
+          .outerRadius(100)
+          .startAngle(Math.pi / 2)
+          .padAngle(0.1)
+          .padRadius(f);
+      arc.generate(data: expected['args']).draw();
       expect(actual, equals(expected));
     },
   );
@@ -163,10 +159,9 @@ void main() {
         };
       };
 
-      var arc = shape.ArcGenerator();
-      arc.startAngle = f;
+      var arc = shape.ArcGenerator().startAngle(f);
 
-      Function.apply(arc.draw, [expected['args']]);
+      arc.generate(data: expected['args']).draw();
       expect(actual, equals(expected));
     },
   );
@@ -180,23 +175,28 @@ void main() {
       };
       var data = shape.ArcData(
           innerRadius: 0, outerRadius: 100, startAngle: 0, endAngle: Math.pi);
-      expect(a.centroid(data).map((n) => round(n)), unorderedEquals([50, 0]));
+      expect(a.generate(data: data).centroid().map((n) => round(n)),
+          unorderedEquals([50, 0]));
+
       data = shape.ArcData(
           innerRadius: 0,
           outerRadius: 100,
           startAngle: 0,
           endAngle: Math.pi / 2);
-      expect(a.centroid(data).map((n) => round(n)),
+      expect(a.generate(data: data).centroid().map((n) => round(n)),
           unorderedEquals([35.355339, -35.355339]));
+
       data = shape.ArcData(
           innerRadius: 50, outerRadius: 100, startAngle: 0, endAngle: -Math.pi);
-      expect(a.centroid(data).map((n) => round(n)), unorderedEquals([-75, 0]));
+      expect(a.generate(data: data).centroid().map((n) => round(n)),
+          unorderedEquals([-75, 0]));
+
       data = shape.ArcData(
           innerRadius: 50,
           outerRadius: 100,
           startAngle: 0,
           endAngle: -Math.pi / 2);
-      expect(a.centroid(data).map((n) => round(n)),
+      expect(a.generate(data: data).centroid().map((n) => round(n)),
           unorderedEquals([-53.033009, -53.033009]));
     },
   );
@@ -216,10 +216,10 @@ void main() {
         };
       };
 
-      var arc = shape.ArcGenerator();
-      arc.innerRadius = f;
+      var arc =
+          shape.ArcGenerator().innerRadius(f).generate(data: expected['args']);
 
-      Function.apply(arc.centroid.call, [expected['args']]);
+      arc.centroid();
       expect(actual, equals(expected));
     },
   );
@@ -239,10 +239,10 @@ void main() {
         };
       };
 
-      var arc = shape.ArcGenerator();
-      arc.outerRadius = f;
+      var arc =
+          shape.ArcGenerator().outerRadius(f).generate(data: expected['args']);
 
-      Function.apply(arc.centroid.call, [expected['args']]);
+      arc.centroid();
       expect(actual, equals(expected));
     },
   );
@@ -262,10 +262,10 @@ void main() {
         };
       };
 
-      var arc = shape.ArcGenerator();
-      arc.startAngle = f;
+      var arc =
+          shape.ArcGenerator().startAngle(f).generate(data: expected['args']);
 
-      Function.apply(arc.centroid.call, [expected['args']]);
+      arc.centroid();
       expect(actual, equals(expected));
     },
   );
@@ -285,10 +285,10 @@ void main() {
         };
       };
 
-      var arc = shape.ArcGenerator();
-      arc.endAngle = f;
+      var arc =
+          shape.ArcGenerator().endAngle(f).generate(data: expected['args']);
 
-      Function.apply(arc.centroid.call, [expected['args']]);
+      arc.centroid();
       expect(actual, equals(expected));
     },
   );
@@ -297,14 +297,14 @@ void main() {
     'arc().innerRadius(0).outerRadius(0) renders a point',
     () {
       var arc = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.startAngle = startAngle;
-        arc.endAngle = endAngle;
+        var arc =
+            shape.ArcGenerator().startAngle(startAngle).endAngle(endAngle);
         return arc;
       };
 
-      expect(arc(startAngle: 0, endAngle: 2 * Math.pi).draw(), pathEqual('M0,0Z'));
-      expect(arc(startAngle: 0, endAngle: 0).draw(), 'M0,0Z');
+      expect(arc(startAngle: 0, endAngle: 2 * Math.pi).generate().draw(),
+          pathEqual('M0,0Z'));
+      expect(arc(startAngle: 0, endAngle: 0).generate().draw(), 'M0,0Z');
     },
   );
 
@@ -312,11 +312,12 @@ void main() {
     'arc().innerRadius(0).outerRadius(r).startAngle(θ₀).endAngle(θ₁) renders a clockwise circle if r > 0 and θ₁ - θ₀ ≥ τ',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.innerRadius = 0;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
-        arc.endAngle = endAngle;
+        var arc = shape.ArcGenerator()
+            .innerRadius(0)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .endAngle(endAngle)
+            .generate();
         return arc;
       };
 
@@ -347,11 +348,12 @@ void main() {
     'arc().innerRadius(0).outerRadius(r).startAngle(θ₀).endAngle(θ₁) renders an anticlockwise circle if r > 0 and θ₀ - θ₁ ≥ τ',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.innerRadius = 0;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
-        arc.endAngle = endAngle;
+        var arc = shape.ArcGenerator()
+            .innerRadius(0)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .endAngle(endAngle)
+            .generate();
         return arc;
       };
 
@@ -384,11 +386,12 @@ void main() {
     'arc().innerRadius(r₀).outerRadius(r₁).startAngle(θ₀).endAngle(θ₁) renders a clockwise annulus if r₀ > 0, r₁ > 0 and θ₀ - θ₁ ≥ τ',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.innerRadius = 50;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
-        arc.endAngle = endAngle;
+        var arc = shape.ArcGenerator()
+            .innerRadius(50)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .endAngle(endAngle)
+            .generate();
         return arc;
       };
 
@@ -426,11 +429,12 @@ void main() {
     'arc().innerRadius(r₀).outerRadius(r₁).startAngle(θ₀).endAngle(θ₁) renders an anticlockwise annulus if r₀ > 0, r₁ > 0 and θ₁ - θ₀ ≥ τ',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.innerRadius = 50;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
-        arc.endAngle = endAngle;
+        var arc = shape.ArcGenerator()
+            .innerRadius(50)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .endAngle(endAngle)
+            .generate();
         return arc;
       };
 
@@ -466,11 +470,12 @@ void main() {
     'arc().innerRadius(0).outerRadius(r).startAngle(θ₀).endAngle(θ₁) renders a small clockwise sector if r > 0 and π > θ₁ - θ₀ ≥ 0',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.innerRadius = 0;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
-        arc.endAngle = endAngle;
+        var arc = shape.ArcGenerator()
+            .innerRadius(0)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .endAngle(endAngle)
+            .generate();
         return arc;
       };
 
@@ -493,11 +498,12 @@ void main() {
     'arc().innerRadius(0).outerRadius(r).startAngle(θ₀).endAngle(θ₁) renders a small anticlockwise sector if r > 0 and π > θ₀ - θ₁ ≥ 0',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.innerRadius = 0;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
-        arc.endAngle = endAngle;
+        var arc = shape.ArcGenerator()
+            .innerRadius(0)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .endAngle(endAngle)
+            .generate();
         return arc;
       };
 
@@ -520,11 +526,12 @@ void main() {
     'arc().innerRadius(0).outerRadius(r).startAngle(θ₀).endAngle(θ₁) renders a large clockwise sector if r > 0 and τ > θ₁ - θ₀ ≥ π',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.innerRadius = 0;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
-        arc.endAngle = endAngle;
+        var arc = shape.ArcGenerator()
+            .innerRadius(0)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .endAngle(endAngle)
+            .generate();
         return arc;
       };
 
@@ -547,11 +554,12 @@ void main() {
     'arc().innerRadius(0).outerRadius(r).startAngle(θ₀).endAngle(θ₁) renders a large anticlockwise sector if r > 0 and τ > θ₀ - θ₁ ≥ π',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.innerRadius = 0;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
-        arc.endAngle = endAngle;
+        var arc = shape.ArcGenerator()
+            .innerRadius(0)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .endAngle(endAngle)
+            .generate();
         return arc;
       };
 
@@ -575,11 +583,12 @@ void main() {
     'arc().innerRadius(r₀).outerRadius(r₁).startAngle(θ₀).endAngle(θ₁) renders a small clockwise annular sector if r₀ > 0, r₁ > 0 and π > θ₁ - θ₀ ≥ 0',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.innerRadius = 50;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
-        arc.endAngle = endAngle;
+        var arc = shape.ArcGenerator()
+            .innerRadius(50)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .endAngle(endAngle)
+            .generate();
         return arc;
       };
 
@@ -603,11 +612,12 @@ void main() {
     'arc().innerRadius(r₀).outerRadius(r₁).startAngle(θ₀).endAngle(θ₁) renders a small anticlockwise annular sector if r₀ > 0, r₁ > 0 and π > θ₀ - θ₁ ≥ 0',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.innerRadius = 50;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
-        arc.endAngle = endAngle;
+        var arc = shape.ArcGenerator()
+            .innerRadius(50)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .endAngle(endAngle)
+            .generate();
         return arc;
       };
 
@@ -631,11 +641,12 @@ void main() {
     'arc().innerRadius(r₀).outerRadius(r₁).startAngle(θ₀).endAngle(θ₁) renders a large clockwise annular sector if r₀ > 0, r₁ > 0 and τ > θ₁ - θ₀ ≥ π',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.innerRadius = 50;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
-        arc.endAngle = endAngle;
+        var arc = shape.ArcGenerator()
+            .innerRadius(50)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .endAngle(endAngle)
+            .generate();
         return arc;
       };
 
@@ -659,11 +670,12 @@ void main() {
     'arc().innerRadius(r₀).outerRadius(r₁).startAngle(θ₀).endAngle(θ₁) renders a large anticlockwise annular sector if r₀ > 0, r₁ > 0 and τ > θ₀ - θ₁ ≥ π',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.innerRadius = 50;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
-        arc.endAngle = endAngle;
+        var arc = shape.ArcGenerator()
+            .innerRadius(50)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .endAngle(endAngle)
+            .generate();
         return arc;
       };
 
@@ -686,12 +698,13 @@ void main() {
     'arc().innerRadius(0).outerRadius(0).cornerRadius(r) renders a point',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.cornerRadius = 5;
-        arc.endAngle = endAngle;
-        arc.innerRadius = 0;
-        arc.outerRadius = 0;
-        arc.startAngle = startAngle;
+        var arc = shape.ArcGenerator()
+            .cornerRadius(5)
+            .endAngle(endAngle)
+            .innerRadius(0)
+            .outerRadius(0)
+            .startAngle(startAngle)
+            .generate();
         return arc;
       };
 
@@ -710,12 +723,13 @@ void main() {
     'arc().innerRadius(0).outerRadius(r).startAngle(θ₀).endAngle(θ₁).cornerRadius(rᵧ) renders a clockwise circle if r > 0 and θ₁ - θ₀ ≥ τ',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.cornerRadius = 5;
-        arc.endAngle = endAngle;
-        arc.innerRadius = 0;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
+        var arc = shape.ArcGenerator()
+            .cornerRadius(5)
+            .endAngle(endAngle)
+            .innerRadius(0)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .generate();
         return arc;
       };
 
@@ -746,12 +760,13 @@ void main() {
     'arc().innerRadius(0).outerRadius(r).startAngle(θ₀).endAngle(θ₁).cornerRadius(rᵧ) renders an anticlockwise circle if r > 0 and θ₀ - θ₁ ≥ τ',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.cornerRadius = 5;
-        arc.endAngle = endAngle;
-        arc.innerRadius = 0;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
+        var arc = shape.ArcGenerator()
+            .cornerRadius(5)
+            .endAngle(endAngle)
+            .innerRadius(0)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .generate();
         return arc;
       };
 
@@ -784,12 +799,13 @@ void main() {
     'arc().innerRadius(r₀).outerRadius(r₁).startAngle(θ₀).endAngle(θ₁).cornerRadius(rᵧ) renders a clockwise annulus if r₀ > 0, r₁ > 0 and θ₀ - θ₁ ≥ τ',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.cornerRadius = 5;
-        arc.endAngle = endAngle;
-        arc.innerRadius = 50;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
+        var arc = shape.ArcGenerator()
+            .cornerRadius(5)
+            .endAngle(endAngle)
+            .innerRadius(50)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .generate();
         return arc;
       };
 
@@ -827,12 +843,13 @@ void main() {
     'arc().innerRadius(r₀).outerRadius(r₁).startAngle(θ₀).endAngle(θ₁).cornerRadius(rᵧ) renders an anticlockwise annulus if r₀ > 0, r₁ > 0 and θ₁ - θ₀ ≥ τ',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.cornerRadius = 5;
-        arc.endAngle = endAngle;
-        arc.innerRadius = 50;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
+        var arc = shape.ArcGenerator()
+            .cornerRadius(5)
+            .endAngle(endAngle)
+            .innerRadius(50)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .generate();
         return arc;
       };
 
@@ -868,12 +885,13 @@ void main() {
     'arc().innerRadius(0).outerRadius(r).startAngle(θ₀).endAngle(θ₁).cornerRadius(rᵧ) renders a small clockwise sector if r > 0 and π > θ₁ - θ₀ ≥ 0',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.cornerRadius = 5;
-        arc.endAngle = endAngle;
-        arc.innerRadius = 0;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
+        var arc = shape.ArcGenerator()
+            .cornerRadius(5)
+            .endAngle(endAngle)
+            .innerRadius(0)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .generate();
         return arc;
       };
 
@@ -899,12 +917,13 @@ void main() {
     'arc().innerRadius(0).outerRadius(r).startAngle(θ₀).endAngle(θ₁).cornerRadius(rᵧ) renders a small anticlockwise sector if r > 0 and π > θ₀ - θ₁ ≥ 0',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.cornerRadius = 5;
-        arc.endAngle = endAngle;
-        arc.innerRadius = 0;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
+        var arc = shape.ArcGenerator()
+            .cornerRadius(5)
+            .endAngle(endAngle)
+            .innerRadius(0)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .generate();
         return arc;
       };
 
@@ -930,12 +949,13 @@ void main() {
     'arc().innerRadius(0).outerRadius(r).startAngle(θ₀).endAngle(θ₁).cornerRadius(rᵧ) renders a large clockwise sector if r > 0 and τ > θ₁ - θ₀ ≥ π',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.cornerRadius = 5;
-        arc.endAngle = endAngle;
-        arc.innerRadius = 0;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
+        var arc = shape.ArcGenerator()
+            .cornerRadius(5)
+            .endAngle(endAngle)
+            .innerRadius(0)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .generate();
         return arc;
       };
 
@@ -961,12 +981,13 @@ void main() {
     'arc().innerRadius(0).outerRadius(r).startAngle(θ₀).endAngle(θ₁).cornerRadius(rᵧ) renders a large anticlockwise sector if r > 0 and τ > θ₀ - θ₁ ≥ π',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.cornerRadius = 5;
-        arc.endAngle = endAngle;
-        arc.innerRadius = 0;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
+        var arc = shape.ArcGenerator()
+            .cornerRadius(5)
+            .endAngle(endAngle)
+            .innerRadius(0)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .generate();
         return arc;
       };
 
@@ -993,12 +1014,13 @@ void main() {
     'arc().innerRadius(r₀).outerRadius(r₁).startAngle(θ₀).endAngle(θ₁).cornerRadius(rᵧ) renders a small clockwise annular sector if r₀ > 0, r₁ > 0 and π > θ₁ - θ₀ ≥ 0',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.cornerRadius = 5;
-        arc.endAngle = endAngle;
-        arc.innerRadius = 50;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
+        var arc = shape.ArcGenerator()
+            .cornerRadius(5)
+            .endAngle(endAngle)
+            .innerRadius(50)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .generate();
         return arc;
       };
 
@@ -1025,12 +1047,13 @@ void main() {
     'arc().innerRadius(r₀).outerRadius(r₁).startAngle(θ₀).endAngle(θ₁).cornerRadius(rᵧ) renders a small anticlockwise annular sector if r₀ > 0, r₁ > 0 and π > θ₀ - θ₁ ≥ 0',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.cornerRadius = 5;
-        arc.endAngle = endAngle;
-        arc.innerRadius = 50;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
+        var arc = shape.ArcGenerator()
+            .cornerRadius(5)
+            .endAngle(endAngle)
+            .innerRadius(50)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .generate();
         return arc;
       };
 
@@ -1057,12 +1080,13 @@ void main() {
     'arc().innerRadius(r₀).outerRadius(r₁).startAngle(θ₀).endAngle(θ₁).cornerRadius(rᵧ) renders a large clockwise annular sector if r₀ > 0, r₁ > 0 and τ > θ₁ - θ₀ ≥ π',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.cornerRadius = 5;
-        arc.endAngle = endAngle;
-        arc.innerRadius = 50;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
+        var arc = shape.ArcGenerator()
+            .cornerRadius(5)
+            .endAngle(endAngle)
+            .innerRadius(50)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .generate();
         return arc;
       };
 
@@ -1089,12 +1113,13 @@ void main() {
     'arc().innerRadius(r₀).outerRadius(r₁).startAngle(θ₀).endAngle(θ₁).cornerRadius(rᵧ) renders a large anticlockwise annular sector if r₀ > 0, r₁ > 0 and τ > θ₀ - θ₁ ≥ π',
     () {
       var a = ({startAngle, endAngle}) {
-        var arc = shape.ArcGenerator();
-        arc.cornerRadius = 5;
-        arc.endAngle = endAngle;
-        arc.innerRadius = 50;
-        arc.outerRadius = 100;
-        arc.startAngle = startAngle;
+        var arc = shape.ArcGenerator()
+            .cornerRadius(5)
+            .endAngle(endAngle)
+            .innerRadius(50)
+            .outerRadius(100)
+            .startAngle(startAngle)
+            .generate();
         return arc;
       };
 
@@ -1120,12 +1145,13 @@ void main() {
     'arc().innerRadius(r₀).outerRadius(r₁).cornerRadius(rᵧ) restricts rᵧ to |r₁ - r₀| / 2',
     () {
       var a = ({innerRadius, outerRadius}) {
-        var arc = shape.ArcGenerator();
-        arc.cornerRadius = double.infinity;
-        arc.endAngle = Math.pi / 2;
-        arc.innerRadius = innerRadius;
-        arc.outerRadius = outerRadius;
-        arc.startAngle = 0;
+        var arc = shape.ArcGenerator()
+            .cornerRadius(double.infinity)
+            .endAngle(Math.pi / 2)
+            .innerRadius(innerRadius)
+            .outerRadius(outerRadius)
+            .startAngle(0)
+            .generate();
         return arc;
       };
 
@@ -1146,12 +1172,13 @@ void main() {
     'arc().innerRadius(r₀).outerRadius(r₁).cornerRadius(rᵧ) merges adjacent corners when rᵧ is relatively large',
     () {
       var a = ({innerRadius, outerRadius}) {
-        var arc = shape.ArcGenerator();
-        arc.cornerRadius = double.infinity;
-        arc.endAngle = Math.pi / 2;
-        arc.innerRadius = innerRadius;
-        arc.outerRadius = outerRadius;
-        arc.startAngle = 0;
+        var arc = shape.ArcGenerator()
+            .cornerRadius(double.infinity)
+            .endAngle(Math.pi / 2)
+            .innerRadius(innerRadius)
+            .outerRadius(outerRadius)
+            .startAngle(0)
+            .generate();
         return arc;
       };
 
@@ -1171,12 +1198,13 @@ void main() {
   test(
     'arc().innerRadius(0).outerRadius(0).startAngle(0).endAngle(τ).padAngle(δ) does not pad a point',
     () {
-      var arc = shape.ArcGenerator();
-      arc.endAngle = 2 * Math.pi;
-      arc.innerRadius = 0;
-      arc.outerRadius = 0;
-      arc.padAngle = 0.1;
-      arc.startAngle = 0;
+      var arc = shape.ArcGenerator()
+          .endAngle(2 * Math.pi)
+          .innerRadius(0)
+          .outerRadius(0)
+          .padAngle(0.1)
+          .startAngle(0)
+          .generate();
 
       expect(
         arc.draw(),
@@ -1188,12 +1216,13 @@ void main() {
   test(
     'arc().innerRadius(0).outerRadius(r).startAngle(0).endAngle(τ).padAngle(δ) does not pad a circle',
     () {
-      var arc = shape.ArcGenerator();
-      arc.endAngle = 2 * Math.pi;
-      arc.innerRadius = 0;
-      arc.outerRadius = 100;
-      arc.padAngle = 0.1;
-      arc.startAngle = 0;
+      var arc = shape.ArcGenerator()
+          .endAngle(2 * Math.pi)
+          .innerRadius(0)
+          .outerRadius(100)
+          .padAngle(0.1)
+          .startAngle(0)
+          .generate();
 
       expect(
         arc.draw(),
@@ -1205,12 +1234,13 @@ void main() {
   test(
     'arc().innerRadius(r₀).outerRadius(r₁).startAngle(0).endAngle(τ).padAngle(δ) does not pad an annulus',
     () {
-      var arc = shape.ArcGenerator();
-      arc.endAngle = 2 * Math.pi;
-      arc.innerRadius = 50;
-      arc.outerRadius = 100;
-      arc.padAngle = 0.1;
-      arc.startAngle = 0;
+      var arc = shape.ArcGenerator()
+          .endAngle(2 * Math.pi)
+          .innerRadius(50)
+          .outerRadius(100)
+          .padAngle(0.1)
+          .startAngle(0)
+          .generate();
 
       expect(
         arc.draw(),
@@ -1223,12 +1253,13 @@ void main() {
   test(
     'arc().innerRadius(0).outerRadius(r).startAngle(θ₀).endAngle(θ₁).padAngle(δ) pads the outside of a circular sector',
     () {
-      var arc = shape.ArcGenerator();
-      arc.endAngle = Math.pi / 2;
-      arc.innerRadius = 0;
-      arc.outerRadius = 100;
-      arc.padAngle = 0.1;
-      arc.startAngle = 0;
+      var arc = shape.ArcGenerator()
+          .endAngle(Math.pi / 2)
+          .innerRadius(0)
+          .outerRadius(100)
+          .padAngle(0.1)
+          .startAngle(0)
+          .generate();
 
       expect(
         arc.draw(),
@@ -1241,12 +1272,13 @@ void main() {
   test(
     'arc().innerRadius(r₀).outerRadius(r₁).startAngle(θ₀).endAngle(θ₁).padAngle(δ) pads an annular sector',
     () {
-      var arc = shape.ArcGenerator();
-      arc.endAngle = Math.pi / 2;
-      arc.innerRadius = 50;
-      arc.outerRadius = 100;
-      arc.padAngle = 0.1;
-      arc.startAngle = 0;
+      var arc = shape.ArcGenerator()
+          .endAngle(Math.pi / 2)
+          .innerRadius(50)
+          .outerRadius(100)
+          .padAngle(0.1)
+          .startAngle(0)
+          .generate();
 
       expect(
         arc.draw(),
@@ -1259,12 +1291,13 @@ void main() {
   test(
     'arc().innerRadius(r₀).outerRadius(r₁).startAngle(θ₀).endAngle(θ₁).padAngle(δ) may collapse the inside of an annular sector',
     () {
-      var arc = shape.ArcGenerator();
-      arc.endAngle = Math.pi / 2;
-      arc.innerRadius = 10;
-      arc.outerRadius = 100;
-      arc.padAngle = 0.2;
-      arc.startAngle = 0;
+      var arc = shape.ArcGenerator()
+          .endAngle(Math.pi / 2)
+          .innerRadius(10)
+          .outerRadius(100)
+          .padAngle(0.2)
+          .startAngle(0)
+          .generate();
 
       expect(
         arc.draw(),
@@ -1277,13 +1310,14 @@ void main() {
   test(
     'arc().innerRadius(0).outerRadius(r).startAngle(θ₀).endAngle(θ₁).padAngle(δ).cornerRadius(rᵧ) rounds and pads a circular sector',
     () {
-      var arc = shape.ArcGenerator();
-      arc.cornerRadius = 10;
-      arc.endAngle = Math.pi / 2;
-      arc.innerRadius = 0;
-      arc.outerRadius = 100;
-      arc.padAngle = 0.1;
-      arc.startAngle = 0;
+      var arc = shape.ArcGenerator()
+          .cornerRadius(10)
+          .endAngle(Math.pi / 2)
+          .innerRadius(0)
+          .outerRadius(100)
+          .padAngle(0.1)
+          .startAngle(0)
+          .generate();
 
       expect(
         arc.draw(),
@@ -1296,13 +1330,14 @@ void main() {
   test(
     'arc().innerRadius(r₀).outerRadius(r₁).startAngle(θ₀).endAngle(θ₁).padAngle(δ).cornerRadius(rᵧ) rounds and pads an annular sector',
     () {
-      var arc = shape.ArcGenerator();
-      arc.cornerRadius = 10;
-      arc.endAngle = Math.pi / 2;
-      arc.innerRadius = 50;
-      arc.outerRadius = 100;
-      arc.padAngle = 0.1;
-      arc.startAngle = 0;
+      var arc = shape.ArcGenerator()
+          .cornerRadius(10)
+          .endAngle(Math.pi / 2)
+          .innerRadius(50)
+          .outerRadius(100)
+          .padAngle(0.1)
+          .startAngle(0)
+          .generate();
 
       expect(
         arc.draw(),
@@ -1315,13 +1350,14 @@ void main() {
   test(
     'arc().innerRadius(r₀).outerRadius(r₁).startAngle(θ₀).endAngle(θ₁).padAngle(δ).cornerRadius(rᵧ) rounds and pads a collapsed annular sector',
     () {
-      var arc = shape.ArcGenerator();
-      arc.cornerRadius = 10;
-      arc.endAngle = Math.pi / 2;
-      arc.innerRadius = 10;
-      arc.outerRadius = 100;
-      arc.padAngle = 0.2;
-      arc.startAngle = 0;
+      var arc = shape.ArcGenerator()
+          .cornerRadius(10)
+          .endAngle(Math.pi / 2)
+          .innerRadius(10)
+          .outerRadius(100)
+          .padAngle(0.2)
+          .startAngle(0)
+          .generate();
 
       expect(
         arc.draw(),

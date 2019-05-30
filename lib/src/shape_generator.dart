@@ -1,3 +1,7 @@
 abstract class ShapeGenerator {
-  draw([data]);
+  Shape generate({data});
+}
+
+abstract class Shape {
+  draw();
 }
