@@ -11,7 +11,8 @@ A simple usage example:
 import 'package:d3_shape/d3_shape.dart';
 
 main() {
-  var awesome = new Awesome();
+    var arc = shape.ArcGenerator().generate().draw();
+    print('Arc: ${arc}');
 }
 ```
 
@@ -30,15 +31,15 @@ As with other aspects of D3, these shapes are driven by data: each shape generat
 ```dart
 import 'package:d3_shape/d3_shape.dart' as shape;
 
-var line = shape.LineGenerator();
-line.x = (d) { return x(d.date); };
-line.y = (d) { return y(d.value); };
+var line = shape.LineGenerator()
+    .x((d) { return x(d.date); })
+    .y((d) { return y(d.value); });
 ```
 
 You can use it to render to a Canvas 2D context:
 
-```js
-line.context(context).draw(data);
+```dart
+line.context(context).generate(data: data).draw();
 ```
 
 For more, read [Introducing d3-shape](https://medium.com/@mbostock/introducing-d3-shape-73f8367e6d12).
@@ -79,29 +80,29 @@ See also the [pie generator](#pies), which computes the necessary angles to repr
 
 Constructs a new arc generator with the default settings.
 
-<a name="_arc" href="#_arc">#</a> <i>arc.</i><b>draw</b>(<i>arguments…</i>) [<>](https://github.com/d3/d3-shape/blob/master/src/arc.js#L89 "Source")
+<a name="_arc" href="#_arc">#</a> <i>arc.</i><b>generate</b>(<i>{data}</i>) [<>](https://github.com/d3/d3-shape/blob/master/src/arc.js#L89 "Source")
 
 Generates an arc for the given *arguments*. The *arguments* are arbitrary; they are simply propagated to the arc generator’s accessor functions along with the `this` object. For example, with the default settings, an object with radii and angles is expected:
 
 ```dart
 var arc = shape.ArcGenerator();
 
-arc.draw({
-  innerRadius: 0,
-  outerRadius: 100,
-  startAngle: 0,
-  endAngle: Math.PI / 2
+arc.generate(data: shape.ArcData(
+    innerRadius: 0,
+    outerRadius: 100,
+    startAngle: 0,
+    endAngle: Math.PI / 2
 }); // "M0,-100A100,100,0,0,1,100,0L0,0Z"
 ```
 
 If the radii and angles are instead defined as constants, you can generate an arc without any arguments:
 
 ```dart
-var arc = shape.ArcGenerator();
-arc.innerRadius = 0;
-arc.outerRadius = 100;
-arc.startAngle = 0;
-arc.endAngle = Math.PI / 2;
+var arc = shape.ArcGenerator().innerRadius(0)
+    .outerRadius(100)
+    .startAngle(0)
+    .endAngle(Math.PI / 2)
+    .generate();
 
 arc.draw(); // "M0,-100A100,100,0,0,1,100,0L0,0Z"
 ```
@@ -122,7 +123,7 @@ If *radius* is specified, sets the inner radius to the specified function or num
 
 ```dart
 innerRadius(d) {
-  return d.innerRadius;
+    return d.innerRadius;
 }
 ```
 
@@ -134,7 +135,7 @@ If *radius* is specified, sets the outer radius to the specified function or num
 
 ```dart
 outerRadius(d) {
-  return d.outerRadius;
+    return d.outerRadius;
 }
 ```
 
@@ -146,7 +147,7 @@ If *radius* is specified, sets the corner radius to the specified function or nu
 
 ```dart
 cornerRadius() {
-  return 0;
+    return 0;
 }
 ```
 
@@ -162,7 +163,7 @@ If *angle* is specified, sets the start angle to the specified function or numbe
 
 ```dart
 startAngle(d) {
-  return d.startAngle;
+    return d.startAngle;
 }
 ```
 
@@ -174,7 +175,7 @@ If *angle* is specified, sets the end angle to the specified function or number 
 
 ```dart
 endAngle(d) {
-  return d.endAngle;
+    return d.endAngle;
 }
 ```
 
@@ -186,7 +187,7 @@ If *angle* is specified, sets the pad angle to the specified function or number 
 
 ```dart
 padAngle() {
-  return d && d.padAngle;
+    return d && d.padAngle;
 }
 ```
 
@@ -208,156 +209,6 @@ If *radius* is specified, sets the pad radius to the specified function or numbe
 
 If *context* is specified, sets the context and returns this arc generator. If *context* is not specified, returns the current context, which defaults to null. If the context is not null, then the [generated arc](#_arc) is rendered to this context as a sequence of [path method](http://www.w3.org/TR/2dcontext/#canvaspathmethods) calls. Otherwise, a [path data](http://www.w3.org/TR/SVG/paths.html#PathData) string representing the generated arc is returned.
 
-### Pies
-
-The pie generator does not produce a shape directly, but instead computes the necessary angles to represent a tabular dataset as a pie or donut chart; these angles can then be passed to an [arc generator](#arcs).
-
-<a name="pie" href="#pie">#</a> d3.<b>pie</b>() [<>](https://github.com/d3/d3-shape/blob/master/src/pie.js "Source")
-
-Constructs a new pie generator with the default settings.
-
-<a name="_pie" href="#_pie">#</a> <i>pie</i>(<i>data</i>[, <i>arguments…</i>]) [<>](https://github.com/d3/d3-shape/blob/master/src/pie.js#L14 "Source")
-
-Generates a pie for the given array of *data*, returning an array of objects representing each datum’s arc angles. Any additional *arguments* are arbitrary; they are simply propagated to the pie generator’s accessor functions along with the `this` object. The length of the returned array is the same as *data*, and each element *i* in the returned array corresponds to the element *i* in the input data. Each object in the returned array has the following properties:
-
-* `data` - the input datum; the corresponding element in the input data array.
-* `value` - the numeric [value](#pie_value) of the arc.
-* `index` - the zero-based [sorted index](#pie_sort) of the arc.
-* `startAngle` - the [start angle](#pie_startAngle) of the arc.
-* `endAngle` - the [end angle](#pie_endAngle) of the arc.
-* `padAngle` - the [pad angle](#pie_padAngle) of the arc.
-
-This representation is designed to work with the arc generator’s default [startAngle](#arc_startAngle), [endAngle](#arc_endAngle) and [padAngle](#arc_padAngle) accessors. The angular units are arbitrary, but if you plan to use the pie generator in conjunction with an [arc generator](#arcs), you should specify angles in radians, with 0 at -*y* (12 o’clock) and positive angles proceeding clockwise.
-
-Given a small dataset of numbers, here is how to compute the arc angles to render this data as a pie chart:
-
-```js
-var data = [1, 1, 2, 3, 5, 8, 13, 21];
-var arcs = d3.pie()(data);
-```
-
-The first pair of parens, `pie()`, [constructs](#pie) a default pie generator. The second, `pie()(data)`, [invokes](#_pie) this generator on the dataset, returning an array of objects:
-
-```json
-[
-  {"data":  1, "value":  1, "index": 6, "startAngle": 6.050474740247008, "endAngle": 6.166830023713296, "padAngle": 0},
-  {"data":  1, "value":  1, "index": 7, "startAngle": 6.166830023713296, "endAngle": 6.283185307179584, "padAngle": 0},
-  {"data":  2, "value":  2, "index": 5, "startAngle": 5.817764173314431, "endAngle": 6.050474740247008, "padAngle": 0},
-  {"data":  3, "value":  3, "index": 4, "startAngle": 5.468698322915565, "endAngle": 5.817764173314431, "padAngle": 0},
-  {"data":  5, "value":  5, "index": 3, "startAngle": 4.886921905584122, "endAngle": 5.468698322915565, "padAngle": 0},
-  {"data":  8, "value":  8, "index": 2, "startAngle": 3.956079637853813, "endAngle": 4.886921905584122, "padAngle": 0},
-  {"data": 13, "value": 13, "index": 1, "startAngle": 2.443460952792061, "endAngle": 3.956079637853813, "padAngle": 0},
-  {"data": 21, "value": 21, "index": 0, "startAngle": 0.000000000000000, "endAngle": 2.443460952792061, "padAngle": 0}
-]
-```
-
-Note that the returned array is in the same order as the data, even though this pie chart is [sorted](#pie_sortValues) by descending value, starting with the arc for the last datum (value 21) at 12 o’clock.
-
-<a name="pie_value" href="#pie_value">#</a> <i>pie</i>.<b>value</b>([<i>value</i>]) [<>](https://github.com/d3/d3-shape/blob/master/src/pie.js#L54 "Source")
-
-If *value* is specified, sets the value accessor to the specified function or number and returns this pie generator. If *value* is not specified, returns the current value accessor, which defaults to:
-
-```js
-function value(d) {
-  return d;
-}
-```
-
-When a pie is [generated](#_pie), the value accessor will be invoked for each element in the input data array, being passed the element `d`, the index `i`, and the array `data` as three arguments. The default value accessor assumes that the input data are numbers, or that they are coercible to numbers using [valueOf](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf). If your data are not simply numbers, then you should specify an accessor that returns the corresponding numeric value for a given datum. For example:
-
-```js
-var data = [
-  {"number":  4, "name": "Locke"},
-  {"number":  8, "name": "Reyes"},
-  {"number": 15, "name": "Ford"},
-  {"number": 16, "name": "Jarrah"},
-  {"number": 23, "name": "Shephard"},
-  {"number": 42, "name": "Kwon"}
-];
-
-var arcs = d3.pie()
-    .value(function(d) { return d.number; })
-    (data);
-```
-
-This is similar to [mapping](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map) your data to values before invoking the pie generator:
-
-```js
-var arcs = d3.pie()(data.map(function(d) { return d.number; }));
-```
-
-The benefit of an accessor is that the input data remains associated with the returned objects, thereby making it easier to access other fields of the data, for example to set the color or to add text labels.
-
-<a name="pie_sort" href="#pie_sort">#</a> <i>pie</i>.<b>sort</b>([<i>compare</i>]) [<>](https://github.com/d3/d3-shape/blob/master/src/pie.js#L62 "Source")
-
-If *compare* is specified, sets the data comparator to the specified function and returns this pie generator. If *compare* is not specified, returns the current data comparator, which defaults to null. If both the data comparator and the value comparator are null, then arcs are positioned in the original input order. Otherwise, the data is sorted according to the data comparator, and the resulting order is used. Setting the data comparator implicitly sets the [value comparator](#pie_sortValues) to null.
-
-The *compare* function takes two arguments *a* and *b*, each elements from the input data array. If the arc for *a* should be before the arc for *b*, then the comparator must return a number less than zero; if the arc for *a* should be after the arc for *b*, then the comparator must return a number greater than zero; returning zero means that the relative order of *a* and *b* is unspecified. For example, to sort arcs by their associated name:
-
-```js
-pie.sort(function(a, b) { return a.name.localeCompare(b.name); });
-```
-
-Sorting does not affect the order of the [generated arc array](#_pie) which is always in the same order as the input data array; it merely affects the computed angles of each arc. The first arc starts at the [start angle](#pie_startAngle) and the last arc ends at the [end angle](#pie_endAngle).
-
-<a name="pie_sortValues" href="#pie_sortValues">#</a> <i>pie</i>.<b>sortValues</b>([<i>compare</i>]) [<>](https://github.com/d3/d3-shape/blob/master/src/pie.js#L58 "Source")
-
-If *compare* is specified, sets the value comparator to the specified function and returns this pie generator. If *compare* is not specified, returns the current value comparator, which defaults to descending value. The default value comparator is implemented as:
-
-```js
-function compare(a, b) {
-  return b - a;
-}
-```
-
-If both the data comparator and the value comparator are null, then arcs are positioned in the original input order. Otherwise, the data is sorted according to the data comparator, and the resulting order is used. Setting the value comparator implicitly sets the [data comparator](#pie_sort) to null.
-
-The value comparator is similar to the [data comparator](#pie_sort), except the two arguments *a* and *b* are values derived from the input data array using the [value accessor](#pie_value), not the data elements. If the arc for *a* should be before the arc for *b*, then the comparator must return a number less than zero; if the arc for *a* should be after the arc for *b*, then the comparator must return a number greater than zero; returning zero means that the relative order of *a* and *b* is unspecified. For example, to sort arcs by ascending value:
-
-```js
-pie.sortValues(function(a, b) { return a - b; });
-```
-
-Sorting does not affect the order of the [generated arc array](#_pie) which is always in the same order as the input data array; it merely affects the computed angles of each arc. The first arc starts at the [start angle](#pie_startAngle) and the last arc ends at the [end angle](#pie_endAngle).
-
-<a name="pie_startAngle" href="#pie_startAngle">#</a> <i>pie</i>.<b>startAngle</b>([<i>angle</i>]) [<>](https://github.com/d3/d3-shape/blob/master/src/pie.js#L66 "Source")
-
-If *angle* is specified, sets the overall start angle of the pie to the specified function or number and returns this pie generator. If *angle* is not specified, returns the current start angle accessor, which defaults to:
-
-```js
-function startAngle() {
-  return 0;
-}
-```
-
-The start angle here means the *overall* start angle of the pie, *i.e.*, the start angle of the first arc. The start angle accessor is invoked once, being passed the same arguments and `this` context as the [pie generator](#_pie). The units of *angle* are arbitrary, but if you plan to use the pie generator in conjunction with an [arc generator](#arcs), you should specify an angle in radians, with 0 at -*y* (12 o’clock) and positive angles proceeding clockwise.
-
-<a name="pie_endAngle" href="#pie_endAngle">#</a> <i>pie</i>.<b>endAngle</b>([<i>angle</i>]) [<>](https://github.com/d3/d3-shape/blob/master/src/pie.js#L70 "Source")
-
-If *angle* is specified, sets the overall end angle of the pie to the specified function or number and returns this pie generator. If *angle* is not specified, returns the current end angle accessor, which defaults to:
-
-```js
-function endAngle() {
-  return 2 * Math.PI;
-}
-```
-
-The end angle here means the *overall* end angle of the pie, *i.e.*, the end angle of the last arc. The end angle accessor is invoked once, being passed the same arguments and `this` context as the [pie generator](#_pie). The units of *angle* are arbitrary, but if you plan to use the pie generator in conjunction with an [arc generator](#arcs), you should specify an angle in radians, with 0 at -*y* (12 o’clock) and positive angles proceeding clockwise.
-
-The value of the end angle is constrained to [startAngle](#pie_startAngle) ± τ, such that |endAngle - startAngle| ≤ τ.
-
-<a name="pie_padAngle" href="#pie_padAngle">#</a> <i>pie</i>.<b>padAngle</b>([<i>angle</i>]) [<>](https://github.com/d3/d3-shape/blob/master/src/pie.js#L74 "Source")
-
-If *angle* is specified, sets the pad angle to the specified function or number and returns this pie generator. If *angle* is not specified, returns the current pad angle accessor, which defaults to:
-
-```js
-function padAngle() {
-  return 0;
-}
-```
-
-The pad angle here means the angular separation between each adjacent arc. The total amount of padding reserved is the specified *angle* times the number of elements in the input data array, and at most |endAngle - startAngle|; the remaining space is then divided proportionally by [value](#pie_value) such that the relative area of each arc is preserved. See the [pie padding animation](http://bl.ocks.org/mbostock/3e961b4c97a1b543fff2) for illustration. The pad angle accessor is invoked once, being passed the same arguments and `this` context as the [pie generator](#_pie). The units of *angle* are arbitrary, but if you plan to use the pie generator in conjunction with an [arc generator](#arcs), you should specify an angle in radians.
-
 ### Lines
 
 [<img width="295" height="154" alt="Line Chart" src="https://raw.githubusercontent.com/d3/d3-shape/master/img/line.png">](http://bl.ocks.org/mbostock/1550e57e12e73b86ad9e)
@@ -378,7 +229,7 @@ If *x* is specified, sets the x accessor to the specified function or number and
 
 ```dart
 x(d) {
-  return d[0];
+    return d[0];
 }
 ```
 
@@ -386,18 +237,18 @@ When a line is [generated](#_line), the x accessor will be invoked for each [def
 
 ```dart
 var data = [
-  {date: new Date(2007, 3, 24), value: 93.24},
-  {date: new Date(2007, 3, 25), value: 95.35},
-  {date: new Date(2007, 3, 26), value: 98.84},
-  {date: new Date(2007, 3, 27), value: 99.92},
-  {date: new Date(2007, 3, 30), value: 99.80},
-  {date: new Date(2007, 4,  1), value: 99.47},
-  …
+    {date: new Date(2007, 3, 24), value: 93.24},
+    {date: new Date(2007, 3, 25), value: 95.35},
+    {date: new Date(2007, 3, 26), value: 98.84},
+    {date: new Date(2007, 3, 27), value: 99.92},
+    {date: new Date(2007, 3, 30), value: 99.80},
+    {date: new Date(2007, 4,  1), value: 99.47},
+    …
 ];
 
-var line = shape.LineGenerator();
-line.x = (d) { return x(d.date); };
-line.y = (d) { return y(d.value); };
+var line = shape.LineGenerator()
+    .x((d) { return x(d.date); })
+    .y((d) { return y(d.value); });
 ```
 
 <a name="line_y" href="#line_y">#</a> <i>line</i>.<b>y</b>([<i>y</i>]) [<>](https://github.com/d3/d3-shape/blob/master/src/line.js#L38 "Source")
@@ -406,7 +257,7 @@ If *y* is specified, sets the y accessor to the specified function or number and
 
 ```dart
 y(d) {
-  return d[1];
+    return d[1];
 }
 ```
 
@@ -418,7 +269,7 @@ If *defined* is specified, sets the defined accessor to the specified function o
 
 ```dart
 defined() {
-  return true;
+    return true;
 }
 ```
 
@@ -490,7 +341,7 @@ If *x* is specified, sets the x0 accessor to the specified function or number an
 
 ```dart
 x(d) {
-  return d[0];
+    return d[0];
 }
 ```
 
@@ -498,19 +349,19 @@ When an area is [generated](#_area), the x0 accessor will be invoked for each [d
 
 ```dart
 var data = [
-  {date: new Date(2007, 3, 24), value: 93.24},
-  {date: new Date(2007, 3, 25), value: 95.35},
-  {date: new Date(2007, 3, 26), value: 98.84},
-  {date: new Date(2007, 3, 27), value: 99.92},
-  {date: new Date(2007, 3, 30), value: 99.80},
-  {date: new Date(2007, 4,  1), value: 99.47},
-  …
+    {date: new Date(2007, 3, 24), value: 93.24},
+    {date: new Date(2007, 3, 25), value: 95.35},
+    {date: new Date(2007, 3, 26), value: 98.84},
+    {date: new Date(2007, 3, 27), value: 99.92},
+    {date: new Date(2007, 3, 30), value: 99.80},
+    {date: new Date(2007, 4,  1), value: 99.47},
+    …
 ];
 
-var area = shape.AreaGenerator();
-area.x = (d) { return x(d.date); };
-area.y1 = (d) { return y(d.value); };
-area.y0 = y(0);
+var area = shape.AreaGenerator()
+    .x((d) { return x(d.date); })
+    .y1((d) { return y(d.value); })
+    .y0(y(0));
 ```
 
 <a name="area_x1" href="#area_x1">#</a> <i>area</i>.<b>x1</b>([<i>x</i>]) [<>](https://github.com/d3/d3-shape/blob/master/src/area.js#L67 "Source")
@@ -529,7 +380,7 @@ If *y* is specified, sets the y0 accessor to the specified function or number an
 
 ```dart
 y() {
-  return 0;
+    return 0;
 }
 ```
 
@@ -541,7 +392,7 @@ If *y* is specified, sets the y1 accessor to the specified function or number an
 
 ```dart
 y(d) {
-  return d[1];
+    return d[1];
 }
 ```
 
@@ -553,7 +404,7 @@ If *defined* is specified, sets the defined accessor to the specified function o
 
 ```dart
 defined() {
-  return true;
+    return true;
 }
 ```
 
@@ -652,10 +503,10 @@ Curves are typically not constructed or used directly, instead being passed to [
 ```dart
 import 'package:d3_shape/curves.dart' as curves;
 
-var line = shape.LineGenerator();
-line.x = (d) { return x(d.date); };
-line.y = (d) { return y(d.value); };
-line.curve = curves.curveCatmullRom(alpha: 0.5);
+var line = shape.LineGenerator()
+    .x((d) { return x(d.date); })
+    .y((d) { return y(d.value); })
+    .curve(curves.curveCatmullRom(alpha: 0.5));
 ```
 
 <a name="curveBasis" href="#curveBasis">#</a> curves.<b>basisCurve</b>()(<i>context</i>) [<>](https://github.com/d3/d3-shape/blob/master/src/curve/basis.js#L12 "Source")
@@ -687,23 +538,23 @@ Produces a straightened cubic [basis spline](https://en.wikipedia.org/wiki/B-spl
 Returns a bundle curve with the specified *beta* in the range [0, 1], representing the bundle strength. If *beta* equals zero, a straight line between the first and last point is produced; if *beta* equals one, a standard [basis](#basis) spline is produced. For example:
 
 ```dart
-var line = shape.LineGenerator();
-line.curve = curves.bundleCurve(beta: 0.5);
+var line = shape.LineGenerator()
+    .curve(curves.bundleCurve(beta: 0.5));
 ```
 
-<a name="cardinalCurve" href="#cardinalCurve">#</a> curves.<b>cardinalCurve</b>(num tension = 0)(<i>context</i>) [<>](https://github.com/d3/d3-shape/blob/master/src/curve/cardinal.js "Source")
+<a name="cardinalCurve" href="#cardinalCurve">#</a> curves.<b>cardinalCurve</b>({tension = 0})(<i>context</i>) [<>](https://github.com/d3/d3-shape/blob/master/src/curve/cardinal.js "Source")
 
 <img src="https://raw.githubusercontent.com/d3/d3-shape/master/img/cardinal.png" width="888" height="240" alt="cardinal">
 
 Produces a cubic [cardinal spline](https://en.wikipedia.org/wiki/Cubic_Hermite_spline#Cardinal_spline) using the specified control points, with one-sided differences used for the first and last piece. The default [tension](#curveCardinal_tension) is 0.
 
-<a name="cardinalClosedCurve" href="#cardinalClosedCurve">#</a> curves.<b>cardinalClosedCurve</b>(num tension = 0)(<i>context</i>) [<>](https://github.com/d3/d3-shape/blob/master/src/curve/cardinalClosed.js "Source")
+<a name="cardinalClosedCurve" href="#cardinalClosedCurve">#</a> curves.<b>cardinalClosedCurve</b>({tension = 0})(<i>context</i>) [<>](https://github.com/d3/d3-shape/blob/master/src/curve/cardinalClosed.js "Source")
 
 <img src="https://raw.githubusercontent.com/d3/d3-shape/master/img/cardinalClosed.png" width="888" height="240" alt="cardinalClosed">
 
 Produces a closed cubic [cardinal spline](https://en.wikipedia.org/wiki/Cubic_Hermite_spline#Cardinal_spline) using the specified control points. When a line segment ends, the first three control points are repeated, producing a closed loop. The default [tension](#curveCardinal_tension) is 0.
 
-<a name="cardinalOpenCurve" href="#cardinalOpenCurve">#</a> curves.<b>cardinalOpenCurve</b>(num tension = 0)(<i>context</i>) [<>](https://github.com/d3/d3-shape/blob/master/src/curve/cardinalOpen.js "Source")
+<a name="cardinalOpenCurve" href="#cardinalOpenCurve">#</a> curves.<b>cardinalOpenCurve</b>({tension = 0})(<i>context</i>) [<>](https://github.com/d3/d3-shape/blob/master/src/curve/cardinalOpen.js "Source")
 
 <img src="https://raw.githubusercontent.com/d3/d3-shape/master/img/cardinalOpen.png" width="888" height="240" alt="cardinalOpen">
 
@@ -714,8 +565,8 @@ Produces a cubic [cardinal spline](https://en.wikipedia.org/wiki/Cubic_Hermite_s
 Returns a cardinal curve with the specified *tension* in the range [0, 1]. The *tension* determines the length of the tangents: a *tension* of one yields all zero tangents, equivalent to [curveLinear](#curveLinear); a *tension* of zero produces a uniform [Catmull–Rom](#curveCatmullRom) spline. For example:
 
 ```dart
-var line = shape.LineGenerator();
-line.curve = curves.cardinalCurve(tension: 0.5);
+var line = shape.LineGenerator()
+    .curve(curves.cardinalCurve(tension: 0.5));
 ```
 
 <a name="catmullRomCurve" href="#catmullRomCurve">#</a> curve.<b>catmullRomCurve</b>(num alpha = 0.5)(<i>context</i>) [<>](https://github.com/d3/d3-shape/blob/master/src/curve/catmullRom.js "Source")
@@ -741,6 +592,6 @@ Produces a cubic Catmull–Rom spline using the specified control points and the
 Returns a cubic Catmull–Rom curve with the specified *alpha* in the range [0, 1]. If *alpha* is zero, produces a uniform spline, equivalent to [cardinalCurve](#cardinalCurve) with a tension of zero; if *alpha* is one, produces a chordal spline; if *alpha* is 0.5, produces a [centripetal spline](https://en.wikipedia.org/wiki/Centripetal_Catmull–Rom_spline). Centripetal splines are recommended to avoid self-intersections and overshoot. For example:
 
 ```dart
-var line = shape.LineGenerator();
-line.curve = curves.catmullRomCurve(alpha: 0.5);
+var line = shape.LineGenerator()
+    .curve(curves.catmullRomCurve(alpha: 0.5));
 ```
